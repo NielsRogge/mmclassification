@@ -35,13 +35,13 @@ class LayerNorm2d(nn.LayerNorm):
     def forward(self, x, print_values=False):
         assert x.dim() == 4, 'LayerNorm2d only supports inputs with shape ' \
             f'(N, C, H, W), but got tensor with shape {x.shape}'
-        print("Hidden states before permute:", x[0,0,:3,:3])
+        # print("Hidden states before permute:", x[0,0,:3,:3])
         x = x.permute(0, 2, 3, 1)
-        print("Hidden states after permute:", x[0,0,:3,:3])
-        print("Normalized shape:", self.normalized_shape)
-        print("Weight:", self.weight[:3])
-        print("Bias:", self.bias[:3])
-        print("Eps:", self.eps)
+        # print("Hidden states after permute:", x[0,0,:3,:3])
+        # print("Normalized shape:", self.normalized_shape)
+        # print("Weight:", self.weight[:3])
+        # print("Bias:", self.bias[:3])
+        # print("Eps:", self.eps)
         x = F.layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
         x = x.permute(0, 3, 1, 2)
         
@@ -316,9 +316,9 @@ class ConvNeXt(BaseBackbone):
             
             if i == 1:
                 x = self.downsample_layers[i][0](x, print_values=True)
-                print("Hidden states after downsampling layernorm:", x[0,0,:3,:3])
+                # print("Hidden states after downsampling layernorm:", x[0,0,:3,:3])
                 x = self.downsample_layers[i][1](x)
-                print("Hidden states after downsampling nn conv2d:", x[0,0,:3,:3])
+                # print("Hidden states after downsampling nn conv2d:", x[0,0,:3,:3])
             else:
                 x = self.downsample_layers[i](x)
             x = stage(x)
@@ -333,7 +333,7 @@ class ConvNeXt(BaseBackbone):
                     # may cause some problem in the downstream tasks
                     outs.append(norm_layer(x).contiguous())
 
-            print(f"Hidden states after stage {i} (after layernorm):", norm_layer(x).contiguous()[0,0,:3,:3])
+            # print(f"Hidden states after stage {i} (after layernorm):", norm_layer(x).contiguous()[0,0,:3,:3])
 
         return tuple(outs)
 
