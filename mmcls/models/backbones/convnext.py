@@ -304,8 +304,11 @@ class ConvNeXt(BaseBackbone):
     def forward(self, x):
         outs = []
         for i, stage in enumerate(self.stages):
+            print("Stage:", i)
             x = self.downsample_layers[i](x)
             x = stage(x)
+            print(f"Shape of output of stage {i} (before layernorm):", x.shape)
+            print(f"First values of output of stage {i} (before layernorm):", x[0, 0, :3, :3])
             if i in self.out_indices:
                 norm_layer = getattr(self, f'norm{i}')
                 if self.gap_before_final_norm:
@@ -315,6 +318,7 @@ class ConvNeXt(BaseBackbone):
                     # The output of LayerNorm2d may be discontiguous, which
                     # may cause some problem in the downstream tasks
                     outs.append(norm_layer(x).contiguous())
+                    print(f"First values of output of stage {i} (after layernorm):", norm_layer(x)[0, 0, :3, :3])
 
         return tuple(outs)
 
