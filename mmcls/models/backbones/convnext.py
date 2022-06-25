@@ -38,7 +38,7 @@ class LayerNorm2d(nn.LayerNorm):
         x = x.permute(0, 2, 3, 1)
         print("Hidden states after permute:", x[0,0,:3,:3])
         print("Normalized shape:", self.normalized_shape)
-        print("Weight:", self.weight[:3,:3])
+        print("Weight:", self.weight[:3])
         print("Bias:", self.bias[:3])
         print("Eps:", self.eps)
         x = F.layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
