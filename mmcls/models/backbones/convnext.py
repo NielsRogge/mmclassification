@@ -12,7 +12,7 @@ from mmcv.runner import BaseModule
 from mmcv.runner.base_module import ModuleList, Sequential
 
 from ..builder import BACKBONES
-from .base_backbone import BaseBackbone
+from .base_backbone import BaseBackbone2
 
 
 @NORM_LAYERS.register_module('LN2d')
@@ -32,13 +32,20 @@ class LayerNorm2d(nn.LayerNorm):
         super().__init__(num_channels, **kwargs)
         self.num_channels = self.normalized_shape[0]
 
-    def forward(self, x):
+    def forward(self, x, print_values=False):
         assert x.dim() == 4, 'LayerNorm2d only supports inputs with shape ' \
             f'(N, C, H, W), but got tensor with shape {x.shape}'
-        return F.layer_norm(
-            x.permute(0, 2, 3, 1), self.normalized_shape, self.weight,
-            self.bias, self.eps).permute(0, 3, 1, 2)
-
+        x = x.permute(0, 2, 3, 1)
+        print("Hidden states after permute:", x[0,0,:3,:3])
+        print("Normalized shape:", self.normalized_shape)
+        print("Weight:", self.weight[:3,:3])
+        print("Bias:", self.bias[:3])
+        print("Eps:", self.eps)
+        x = F.layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
+        x = x.permute(0, 3, 1, 2)
+        
+        return x
+            
 
 class ConvNeXtBlock(BaseModule):
     """ConvNeXt Block.
@@ -307,7 +314,7 @@ class ConvNeXt(BaseBackbone):
             print("-------------Stage:--------------", i)
             
             if i == 1:
-                x = self.downsample_layers[i][0](x)
+                x = self.downsample_layers[i][0](x, print_values=True)
                 print("Hidden states after downsampling layernorm:", x[0,0,:3,:3])
                 x = self.downsample_layers[i][1](x)
                 print("Hidden states after downsampling nn conv2d:", x[0,0,:3,:3])
