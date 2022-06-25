@@ -12,7 +12,7 @@ from mmcv.runner import BaseModule
 from mmcv.runner.base_module import ModuleList, Sequential
 
 from ..builder import BACKBONES
-from .base_backbone import BaseBackbone2
+from .base_backbone import BaseBackbone
 
 
 @NORM_LAYERS.register_module('LN2d')
