@@ -35,6 +35,7 @@ class LayerNorm2d(nn.LayerNorm):
     def forward(self, x, print_values=False):
         assert x.dim() == 4, 'LayerNorm2d only supports inputs with shape ' \
             f'(N, C, H, W), but got tensor with shape {x.shape}'
+        print("Hidden states before permute:", x[0,0,:3,:3])
         x = x.permute(0, 2, 3, 1)
         print("Hidden states after permute:", x[0,0,:3,:3])
         print("Normalized shape:", self.normalized_shape)
@@ -320,10 +321,8 @@ class ConvNeXt(BaseBackbone):
                 print("Hidden states after downsampling nn conv2d:", x[0,0,:3,:3])
             else:
                 x = self.downsample_layers[i](x)
-            print(f"First values of output of stage {i} after downsampling:", x[0, 0, :3, :3])
             x = stage(x)
-            print(f"Shape of output of stage {i} (before layernorm):", x.shape)
-            print(f"First values of output of stage {i} (before layernorm):", x[0, 0, :3, :3])
+            print(f"Hidden states after stage {i} (before layernorm):", x[0,0,:3,:3])
             if i in self.out_indices:
                 norm_layer = getattr(self, f'norm{i}')
                 if self.gap_before_final_norm:
@@ -333,7 +332,8 @@ class ConvNeXt(BaseBackbone):
                     # The output of LayerNorm2d may be discontiguous, which
                     # may cause some problem in the downstream tasks
                     outs.append(norm_layer(x).contiguous())
-                    print(f"First values of output of stage {i} (after layernorm):", norm_layer(x)[0, 0, :3, :3])
+
+            print(f"Hidden states after stage {i} (after layernorm):", norm_layer(x).contiguous()[0,0,:3,:3])
 
         return tuple(outs)
 
