@@ -304,8 +304,9 @@ class ConvNeXt(BaseBackbone):
     def forward(self, x):
         outs = []
         for i, stage in enumerate(self.stages):
-            print("Stage:", i)
+            print("-------------Stage:--------------", i)
             x = self.downsample_layers[i](x)
+            print(f"First values of output of stage {i} after downsampling:", x[0, 0, :3, :3])
             x = stage(x)
             print(f"Shape of output of stage {i} (before layernorm):", x.shape)
             print(f"First values of output of stage {i} (before layernorm):", x[0, 0, :3, :3])
